@@ -1,22 +1,17 @@
 {
-	"name": "RunOnSave",
-	"displayName": "Run on Save",
-	"description": "Run commands when a file is saved in vscode.",
-	"icon": "images/save-icon.svg",
+	"name": "save-and-run",
+	"displayName": "Run saved file in Teminal",
+	"description": "Run commands when a file is saved in Terminal",
+	"icon": "images/icon.png",
 	"galleryBanner": {
         "color": "#5c2d91",
         "theme": "light"
     },
-	"version": "0.0.16",
-	"publisher": "emeraldwalk",
-	"license": "See LICENSE file",
-	"homepage": "https://github.com/emeraldwalk/vscode-runonsave/blob/master/README.md",
+	"version": "0.0.1",
+	"publisher": "wk-j",
     "repository": {
         "type": "git",
-        "url": "https://github.com/emeraldwalk/vscode-runonsave.git"
-    },
-	"bugs": {
-        "url": "https://github.com/emeraldwalk/vscode-runonsave/issues"
+        "url": "https://github.com/wk-j/vscode-save-and-run"
     },
 	"engines": {
 		"vscode": "^0.10.1"
@@ -30,28 +25,19 @@
 	"main": "./out/src/extension",
 	"contributes": {
 		"commands": [{
-			"command": "extension.emeraldwalk.enableRunOnSave",
-			"title": "Run On Save: Enable"
+			"command": "extension.saveAndRun.enable",
+			"title": "Save and Run : Enable"
 		},{
-			"command": "extension.emeraldwalk.disableRunOnSave",
-			"title": "Run On Save: Disable"
+			"command": "extension.saveAndRun.disable",
+			"title": "Save and Run : Disable"
 		}],
 		"configuration": {
-			"title": "Run On Save command configuration.",
+			"title": "Save & Run command configuration.",
 			"type": "object",
 			"properties": {
 				"emeraldwalk.runonsave": {
 					"type": "object",
 					"properties": {
-						"autoClearConsole": {
-							"type": "boolean",
-							"description": "Automatically clear the console on each save before running commands.",
-							"default": false
-						},
-						"shell": {
-							"type": "string",
-							"description": "Specify shell path to run commands (gets used in options arg passed to child_process.exec)."
-						},
 						"commands": {
 							"type": "array",
 							"items": {
