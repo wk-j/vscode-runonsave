@@ -50,6 +50,32 @@ class RunOnSaveExtension {
 		this.loadConfig();
 	}
 
+	private runInTerminal(command) {
+         let editor = vscode.window.activeTextEditor;
+         let document = editor.document;
+         let eol = editor.document.lineCount + 1;
+         let position = editor.selection.active;
+         var startPos = new vscode.Position(eol, 0);
+         var endPos = new vscode.Position(eol, command.length);
+         var selStartPos = new vscode.Position(eol - 1, 0);
+         var newSelection = new vscode.Selection(selStartPos, endPos);
+        editor.edit((edits) => {
+            edits.insert(startPos, '\n' + command);
+        }).then(() => {
+            editor.selection = newSelection;
+            vscode.commands.executeCommand('workbench.action.terminal.runSelectedText');
+            vscode.commands.executeCommand('undo');
+        },  () => {
+            vscode.window.showErrorMessage("Unable to run task");
+        })
+    }
+
+	private runAllInTerminal(commands: ICommand[]): void {
+		commands.forEach(command => {
+			this.runInTerminal(command.cmd);
+		});
+	}
+
 	/** Recursive call to run commands. */
 	private _runCommands(commands: Array<ICommand>): void {
 		if (commands.length) {
@@ -185,6 +211,7 @@ class RunOnSaveExtension {
 			});
 		}
 
-		this._runCommands(commands);
+		//this._runCommands(commands);
+		this.runAllInTerminal(commands);
 	}
 }
