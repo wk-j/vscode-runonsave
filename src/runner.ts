@@ -27,21 +27,21 @@ export class RunOnSaveExtension {
 	}
 
 	private runInTerminal(command) {
-         let editor = vscode.window.activeTextEditor;
-         let document = editor.document;
-         let eol = editor.document.lineCount + 1;
-         let position = editor.selection.active;
-         var startPos = new vscode.Position(eol, 0);
-         var endPos = new vscode.Position(eol, command.length);
-         var selStartPos = new vscode.Position(eol - 1, 0);
-         var newSelection = new vscode.Selection(selStartPos, endPos);
+		let editor = vscode.window.activeTextEditor;
+		let document = editor.document;
+		let eol = editor.document.lineCount + 1;
+		let position = editor.selection.active;
+		var startPos = new vscode.Position(eol, 0);
+		var endPos = new vscode.Position(eol, command.length);
+		var selStartPos = new vscode.Position(eol - 1, 0);
+		var newSelection = new vscode.Selection(selStartPos, endPos);
         editor.edit((edits) => {
             edits.insert(startPos, '\n' + command);
         }).then(() => {
             editor.selection = newSelection;
             vscode.commands.executeCommand('workbench.action.terminal.runSelectedText');
             vscode.commands.executeCommand('undo');
-        },  () => {
+        }, () => {
             vscode.window.showErrorMessage("Unable to run task");
         })
     }
@@ -81,9 +81,9 @@ export class RunOnSaveExtension {
 		}
 	}
 
-	private get _execOption(): {shell: string} {
+	private get _execOption(): { shell: string } {
 		if (this.shell) {
-			return {shell: this.shell};
+			return { shell: this.shell };
 		}
 	}
 
@@ -115,7 +115,7 @@ export class RunOnSaveExtension {
 	 * Show message in output channel
 	 */
 	public showOutputMessage(message?: string): void {
-		message = message || `Run On Save ${this.isEnabled ? 'enabled': 'disabled'}.`;
+		message = message || `Run On Save ${this.isEnabled ? 'enabled' : 'disabled'}.`;
 		this._outputChannel.appendLine(message);
 	}
 
@@ -129,11 +129,11 @@ export class RunOnSaveExtension {
 	}
 
 	public runCommands(document: vscode.TextDocument): void {
-		if(this.autoClearConsole) {
+		if (this.autoClearConsole) {
 			this._outputChannel.clear();
 		}
 
-		if(!this.isEnabled || this.commands.length === 0) {
+		if (!this.isEnabled || this.commands.length === 0) {
 			this.showOutputMessage();
 			return;
 		}

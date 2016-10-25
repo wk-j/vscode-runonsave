@@ -7,8 +7,9 @@ Task("Publish").Does(() => {
 });
 
 Task("Icon").Does(() =>{
-    CreateLogo("Save", "images/icon.png", new LogoSettings {
-        Background = "Green",
+    CreateLogo("Save.R", "images/icon.png", new LogoSettings {
+        Background = "SlateBlue",
+        //FontFamily = "Monaco",
         Foreground = "White",
         Padding = 30
     });

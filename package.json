@@ -3,12 +3,12 @@
 	"displayName": "Save and Run",
 	"description": "Run commands when a file is saved in Terminal",
 	"icon": "images/icon.png",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"publisher": "wk-j",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/wk-j/vscode-save-and-run"
-    },
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wk-j/vscode-save-and-run"
+	},
 	"engines": {
 		"vscode": "^0.10.1"
 	},
@@ -20,13 +20,16 @@
 	],
 	"main": "./out/src/extension",
 	"contributes": {
-		"commands": [{
-			"command": "extension.saveAndRun.enable",
-			"title": "Save and Run : Enable"
-		},{
-			"command": "extension.saveAndRun.disable",
-			"title": "Save and Run : Disable"
-		}],
+		"commands": [
+			{
+				"command": "extension.saveAndRun.enable",
+				"title": "Save and Run : Enable"
+			},
+			{
+				"command": "extension.saveAndRun.disable",
+				"title": "Save and Run : Disable"
+			}
+		],
 		"configuration": {
 			"title": "Save & Run command configuration.",
 			"type": "object",
