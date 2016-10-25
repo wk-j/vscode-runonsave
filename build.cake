@@ -7,11 +7,11 @@ Task("Publish").Does(() => {
 });
 
 Task("Icon").Does(() =>{
-    CreateLogo("Save.R", "images/icon.png", new LogoSettings {
-        Background = "SlateBlue",
-        //FontFamily = "Monaco",
+    CreateLogo("Run", "images/icon.png", new LogoSettings {
+        Background = "OrangeRed",
+        FontFamily = "Phosphate",
         Foreground = "White",
-        Padding = 30
+        Padding = 50
     });
 });
 
