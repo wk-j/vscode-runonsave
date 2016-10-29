@@ -53,6 +53,7 @@ Commands support placeholders similar to tasks.json.
 
 - `${workspaceRoot}`: workspace root folder
 - `${file}`: path of saved file
+- `${relativeFile}`: relative path of saved file
 - `${fileBasename}`: saved file's basename
 - `${fileDirname}`: directory name of saved file
 - `${fileExtname}`: extension (including .) of saved file
