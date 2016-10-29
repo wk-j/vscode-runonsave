@@ -168,6 +168,10 @@ export class RunOnSaveExtension {
 
 			var extName = path.extname(document.fileName);
 
+			var root = vscode.workspace.rootPath;
+			var relativeFile = "." + document.fileName.replace(root, "");
+
+			cmdStr = cmdStr.replace(/\${relativeFile}/g, relativeFile);
 			cmdStr = cmdStr.replace(/\${file}/g, `${document.fileName}`);
 			cmdStr = cmdStr.replace(/\${workspaceRoot}/g, `${vscode.workspace.rootPath}`);
 			cmdStr = cmdStr.replace(/\${fileBasename}/g, `${path.basename(document.fileName)}`);
