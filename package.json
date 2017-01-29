@@ -34,7 +34,7 @@
 			"title": "Save & Run command configuration.",
 			"type": "object",
 			"properties": {
-				"emeraldwalk.runonsave": {
+				"saveAndRun": {
 					"type": "object",
 					"properties": {
 						"commands": {
