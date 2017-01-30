@@ -48,6 +48,7 @@ export class RunOnSaveExtension {
 
 	private runAllInTerminal(commands: ICommand[]): void {
 		commands.forEach(command => {
+			this.showTerminal();
 			this.runInTerminal(command.cmd);
 		});
 	}
@@ -117,6 +118,10 @@ export class RunOnSaveExtension {
 	public showOutputMessage(message?: string): void {
 		message = message || `Run On Save ${this.isEnabled ? 'enabled' : 'disabled'}.`;
 		this._outputChannel.appendLine(message);
+	}
+
+	private showTerminal() {
+		vscode.commands.executeCommand("workbench.action.terminal.focus");
 	}
 
 	/**
