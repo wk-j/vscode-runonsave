@@ -41,6 +41,7 @@ export class RunOnSaveExtension {
             editor.selection = newSelection;
             vscode.commands.executeCommand('workbench.action.terminal.runSelectedText');
             vscode.commands.executeCommand('undo');
+			//this.showTerminal();
         }, () => {
             vscode.window.showErrorMessage("Unable to run task");
         })
@@ -48,7 +49,7 @@ export class RunOnSaveExtension {
 
 	private runAllInTerminal(commands: ICommand[]): void {
 		commands.forEach(command => {
-			this.showTerminal();
+			//this.showTerminal();
 			this.runInTerminal(command.cmd);
 		});
 	}
