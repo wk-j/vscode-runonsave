@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import {exec} from 'child_process';
 import * as path from 'path';
+import * as ncp  from "copy-paste";
 
 interface ICommand {
 	match?: string;
@@ -16,119 +17,61 @@ interface IConfig {
 }
 
 export class RunOnSaveExtension {
-	private _outputChannel: vscode.OutputChannel;
-	private _context: vscode.ExtensionContext;
-	private _config: IConfig;
+	private outputChannel: vscode.OutputChannel;
+	private context: vscode.ExtensionContext;
+	private config: IConfig;
 
 	constructor(context: vscode.ExtensionContext) {
-		this._context = context;
-		this._outputChannel = vscode.window.createOutputChannel('Run On Save');
+		this.context = context;
+		this.outputChannel = vscode.window.createOutputChannel('Run On Save');
 		this.loadConfig();
 	}
 
 	private runInTerminal(command) {
-		let editor = vscode.window.activeTextEditor;
-		let document = editor.document;
-		let eol = editor.document.lineCount + 1;
-		let position = editor.selection.active;
-		var startPos = new vscode.Position(eol, 0);
-		var endPos = new vscode.Position(eol, command.length);
-		var selStartPos = new vscode.Position(eol - 1, 0);
-		var newSelection = new vscode.Selection(selStartPos, endPos);
-        editor.edit((edits) => {
-            edits.insert(startPos, '\n' + command);
-        }).then(() => {
-            editor.selection = newSelection;
-            vscode.commands.executeCommand('workbench.action.terminal.runSelectedText');
-            vscode.commands.executeCommand('undo');
-			//this.showTerminal();
-        }, () => {
-            vscode.window.showErrorMessage("Unable to run task");
-        })
+		 ncp.copy(command + '\n', function () {
+			vscode.commands.executeCommand("workbench.action.terminal.paste"); 
+			var editor = vscode.window.activeTextEditor;
+			if(editor) {
+				editor.show();
+			}
+		});
     }
 
 	private runAllInTerminal(commands: ICommand[]): void {
 		commands.forEach(command => {
-			//this.showTerminal();
 			this.runInTerminal(command.cmd);
 		});
 	}
 
-	/** Recursive call to run commands. */
-	private _runCommands(commands: Array<ICommand>): void {
-		if (commands.length) {
-			var cfg = commands.shift();
-
-			this.showOutputMessage(`*** cmd start: ${cfg.cmd}`);
-
-			var child = exec(cfg.cmd, this._execOption);
-			child.stdout.on('data', data => this._outputChannel.append(data));
-			child.stderr.on('data', data => this._outputChannel.append(data));
-			child.on('exit', (e) => {
-				// if sync
-				if (!cfg.isAsync) {
-					this._runCommands(commands);
-				}
-			});
-
-			// if async, go ahead and run next command
-			if (cfg.isAsync) {
-				this._runCommands(commands);
-			}
-		}
-		else {
-			// NOTE: This technically just marks the end of commands starting.
-			// There could still be asyc commands running.
-			this.showStatusMessage('Run on Save done.');
-		}
-	}
-
-	private get _execOption(): { shell: string } {
-		if (this.shell) {
-			return { shell: this.shell };
-		}
-	}
-
 	public get isEnabled(): boolean {
-		return !!this._context.globalState.get('isEnabled', true);
+		return !!this.context.globalState.get('isEnabled', true);
 	}
 	public set isEnabled(value: boolean) {
-		this._context.globalState.update('isEnabled', value);
+		this.context.globalState.update('isEnabled', value);
 		this.showOutputMessage();
 	}
 
 	public get shell(): string {
-		return this._config.shell;
+		return this.config.shell;
 	}
 
 	public get autoClearConsole(): boolean {
-		return !!this._config.autoClearConsole;
+		return !!this.config.autoClearConsole;
 	}
 
 	public get commands(): Array<ICommand> {
-		return this._config.commands || [];
+		return this.config.commands || [];
 	}
 
 	public loadConfig(): void {
-		this._config = <IConfig><any>vscode.workspace.getConfiguration('saveAndRun');
+		this.config = <IConfig><any>vscode.workspace.getConfiguration('saveAndRun');
 	}
 
-	/**
-	 * Show message in output channel
-	 */
 	public showOutputMessage(message?: string): void {
 		message = message || `Run On Save ${this.isEnabled ? 'enabled' : 'disabled'}.`;
-		this._outputChannel.appendLine(message);
+		this.outputChannel.appendLine(message);
 	}
 
-	private showTerminal() {
-		vscode.commands.executeCommand("workbench.action.terminal.focus");
-	}
-
-	/**
-	 * Show message in status bar and output channel.
-	 * Return a disposable to remove status bar message.
-	 */
 	public showStatusMessage(message: string): vscode.Disposable {
 		this.showOutputMessage(message);
 		return vscode.window.setStatusBarMessage(message);
@@ -136,7 +79,7 @@ export class RunOnSaveExtension {
 
 	public runCommands(document: vscode.TextDocument): void {
 		if (this.autoClearConsole) {
-			this._outputChannel.clear();
+			this.outputChannel.clear();
 		}
 
 		if (!this.isEnabled || this.commands.length === 0) {
