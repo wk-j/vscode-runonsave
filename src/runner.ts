@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import {exec} from 'child_process';
 import * as path from 'path';
 var ncp = require("copy-paste");
+var endOfLine = require('os').EOL;
+
 
 interface ICommand {
 	match?: string;
@@ -28,12 +30,12 @@ export class RunOnSaveExtension {
 	}
 
 	private runInTerminal(command) {
-		 ncp.copy(command + '\n', function () {
-			vscode.commands.executeCommand("workbench.action.terminal.paste"); 
-			var editor = vscode.window.activeTextEditor;
-			if(editor) {
-				editor.show();
-			}
+		 ncp.copy(command + endOfLine, function () {
+			vscode.commands.executeCommand("workbench.action.terminal.focus").then(() => {
+				vscode.commands.executeCommand("workbench.action.terminal.paste"); 
+				var editor = vscode.window.activeTextEditor;
+				if(editor) editor.show();
+			});
 		});
     }
 
