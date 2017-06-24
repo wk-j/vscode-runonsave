@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import {exec} from 'child_process';
 import * as path from 'path';
-import * as ncp  from "copy-paste";
+var ncp = require("copy-paste");
 
 interface ICommand {
 	match?: string;
