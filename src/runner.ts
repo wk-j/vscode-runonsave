@@ -30,11 +30,13 @@ export class RunOnSaveExtension {
 	}
 
 	private runInTerminal(command) {
+		var editor = vscode.window.activeTextEditor
+		var column = editor.viewColumn;
 		 ncp.copy(command + endOfLine, function () {
 			vscode.commands.executeCommand("workbench.action.terminal.focus").then(() => {
-				vscode.commands.executeCommand("workbench.action.terminal.paste"); 
-				var editor = vscode.window.activeTextEditor;
-				if(editor) editor.show();
+				vscode.commands.executeCommand("workbench.action.terminal.paste").then(() => {
+					vscode.window.showTextDocument(editor.document, column)
+				});
 			});
 		});
     }
