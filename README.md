@@ -16,9 +16,9 @@ Simplify original extension by pass command into Terminal directly without spawn
 - Commands only get run when saving an existing file. Creating new files, and Save as... don't trigger the commands.
 - For Ubuntu user, you have to install xclip
 
-```
-sudo apt-get install xlip
-```
+  ```
+  sudo apt-get install xclip
+  ```
 
 ## Configuration
 
