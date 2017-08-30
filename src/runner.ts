@@ -1,15 +1,15 @@
 import * as vscode from "vscode";
-import {exec} from 'child_process';
+import { exec } from 'child_process';
 import * as path from 'path';
 var ncp = require("copy-paste");
 var endOfLine = require('os').EOL;
-
 
 interface ICommand {
 	match?: string;
 	notMatch?: string;
 	cmd: string;
 	isAsync: boolean;
+	useShortcut?: boolean;
 }
 
 interface IConfig {
@@ -32,14 +32,14 @@ export class RunOnSaveExtension {
 	private runInTerminal(command) {
 		var editor = vscode.window.activeTextEditor
 		var column = editor.viewColumn;
-		 ncp.copy(command + endOfLine, function () {
+		ncp.copy(command + endOfLine, () => {
 			vscode.commands.executeCommand("workbench.action.terminal.focus").then(() => {
 				vscode.commands.executeCommand("workbench.action.terminal.paste").then(() => {
 					vscode.window.showTextDocument(editor.document, column)
 				});
 			});
 		});
-    }
+	}
 
 	private runAllInTerminal(commands: ICommand[]): void {
 		commands.forEach(command => {
@@ -81,15 +81,7 @@ export class RunOnSaveExtension {
 		return vscode.window.setStatusBarMessage(message);
 	}
 
-	public runCommands(document: vscode.TextDocument): void {
-		if (this.autoClearConsole) {
-			this.outputChannel.clear();
-		}
-
-		if (!this.isEnabled || this.commands.length === 0) {
-			this.showOutputMessage();
-			return;
-		}
+	private findActiveCommands(document: vscode.TextDocument, onlyShortcut: boolean) {
 
 		var match = (pattern: string) => pattern && pattern.length > 0 && new RegExp(pattern).test(document.fileName);
 
@@ -140,11 +132,29 @@ export class RunOnSaveExtension {
 
 			commands.push({
 				cmd: cmdStr,
-				isAsync: !!cfg.isAsync
+				isAsync: !!cfg.isAsync,
+				useShortcut: cfg.useShortcut
 			});
 		}
 
-		//this._runCommands(commands);
+		if (onlyShortcut) {
+			return commands.filter(x => x.useShortcut == true);
+		}
+		else {
+			return commands.filter(x => x.useShortcut != true)
+		}
+	}
+
+	public runCommands(document: vscode.TextDocument, onlyShortcut: boolean): void {
+		if (this.autoClearConsole) {
+			this.outputChannel.clear();
+		}
+
+		if (!this.isEnabled || this.commands.length === 0) {
+			this.showOutputMessage();
+		}
+
+		let commands = this.findActiveCommands(document, onlyShortcut);
 		this.runAllInTerminal(commands);
 	}
 }
