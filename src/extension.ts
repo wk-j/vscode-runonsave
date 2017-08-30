@@ -20,7 +20,13 @@ export function activate(context: vscode.ExtensionContext): void {
 		extension.isEnabled = false;
 	});
 
+	vscode.commands.registerCommand("extension.saveAndRun.execute", () => {
+		let doc = vscode.window.activeTextEditor.document
+		doc.save();
+		extension.runCommands(doc, true);
+	});
+
 	vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-		extension.runCommands(document);
+		extension.runCommands(document, false);
 	});
 }

@@ -3,7 +3,7 @@
   "displayName": "Save and Run",
   "description": "Run commands when a file is saved in Terminal",
   "icon": "images/icon.png",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "publisher": "wk-j",
   "repository": {
     "type": "git",
@@ -20,6 +20,13 @@
   ],
   "main": "./out/src/extension",
   "contributes": {
+    "keybindings": [
+      {
+          "command": "extension.saveAndRun.execute",
+          "key": "ctrl+shift+r",
+          "mac": "cmd+shift+r"
+      }
+    ],
     "commands": [
       {
         "command": "extension.saveAndRun.enable",
@@ -60,6 +67,11 @@
                   "isAsync": {
                     "type": "boolean",
                     "description": "Run command asynchronously.",
+                    "default": false
+                  },
+                  "useShortcut": {
+                    "type": "boolean",
+                    "description": "Only execute when press shortcut keys",
                     "default": false
                   }
                 }
