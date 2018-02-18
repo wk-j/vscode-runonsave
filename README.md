@@ -11,37 +11,31 @@ Simplify original extension by pass command into Terminal directly without spawn
 - Configure multiple commands that run when a file is saved
 - Regex pattern matching for files that trigger commands running
 
-## Note
-
-- Commands only get run when saving an existing file. Creating new files, and Save as... don't trigger the commands.
-- For Ubuntu user, you have to install xclip
-
-  ```
-  sudo apt-get install xclip
-  ```
-
 ## Configuration
 
 Add "saveAndRun" configuration to user or workspace settings.
 
-- "commands" - array of commands that will be run whenever a file is saved.
-  - "match" - a regex for matching which files to run commands on
-  - "cmd" - command to run. Can include parameters that will be replaced at runtime (see Placeholder Tokens section below).
+- "commands" - Array of commands that will be run whenever a file is saved.
+  - "match" - A regex for matching which files to run commands on
+  - "cmd" - Command to run. Can include parameters that will be replaced at runtime (see Placeholder Tokens section below).
+  - "useShortcut" - Execute file with shortcut key `Command + Shift + R`
 
 ## Sample Config
 
 ```json
 "saveAndRun": {
-	"commands": [
-		{
-			"match": ".*",
-			"cmd": "echo 'I run for all files.'"
-		},
-		{
-			"match": "\\.txt$",
-			"cmd": "echo 'I am a .txt file ${file}.'"
-		}
-	]
+  "commands": [
+    {
+      "match": ".*",
+      "cmd": "echo 'I run for all files.'",
+      "useShortcut": false
+    },
+    {
+      "match": "\\.txt$",
+      "cmd": "echo 'I am a .txt file ${file}.'",
+      "useShortcut": false
+    }
+  ]
 }
 ```
 

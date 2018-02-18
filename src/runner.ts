@@ -1,8 +1,7 @@
+import { exec } from "child_process";
+import * as path from "path";
 import * as vscode from "vscode";
-import { exec } from 'child_process';
-import * as path from 'path';
-var ncp = require("copy-paste");
-var endOfLine = require('os').EOL;
+import { Executor } from "./executor";
 
 interface ICommand {
 	match?: string;
@@ -15,7 +14,7 @@ interface ICommand {
 interface IConfig {
 	shell: string;
 	autoClearConsole: boolean;
-	commands: Array<ICommand>;
+	commands: ICommand[];
 }
 
 export class RunOnSaveExtension {
@@ -25,20 +24,14 @@ export class RunOnSaveExtension {
 
 	constructor(context: vscode.ExtensionContext) {
 		this.context = context;
-		this.outputChannel = vscode.window.createOutputChannel('Run On Save');
+		this.outputChannel = vscode.window.createOutputChannel("Run On Save");
 		this.loadConfig();
 	}
 
 	private runInTerminal(command) {
-		var editor = vscode.window.activeTextEditor
-		var column = editor.viewColumn;
-		ncp.copy(command + endOfLine, () => {
-			vscode.commands.executeCommand("workbench.action.terminal.focus").then(() => {
-				vscode.commands.executeCommand("workbench.action.terminal.paste").then(() => {
-					vscode.window.showTextDocument(editor.document, column)
-				});
-			});
-		});
+		let editor = vscode.window.activeTextEditor
+		let column = editor.viewColumn;
+		Executor.runInTerminal(command)
 	}
 
 	private runAllInTerminal(commands: ICommand[]): void {
@@ -48,10 +41,10 @@ export class RunOnSaveExtension {
 	}
 
 	public get isEnabled(): boolean {
-		return !!this.context.globalState.get('isEnabled', true);
+		return !!this.context.globalState.get("isEnabled", true);
 	}
 	public set isEnabled(value: boolean) {
-		this.context.globalState.update('isEnabled', value);
+		this.context.globalState.update("isEnabled", value);
 		this.showOutputMessage();
 	}
 
@@ -63,16 +56,16 @@ export class RunOnSaveExtension {
 		return !!this.config.autoClearConsole;
 	}
 
-	public get commands(): Array<ICommand> {
+	public get commands(): ICommand[] {
 		return this.config.commands || [];
 	}
 
 	public loadConfig(): void {
-		this.config = <IConfig><any>vscode.workspace.getConfiguration('saveAndRun');
+		this.config = vscode.workspace.getConfiguration("saveAndRun") as any as IConfig;
 	}
 
 	public showOutputMessage(message?: string): void {
-		message = message || `Run On Save ${this.isEnabled ? 'enabled' : 'disabled'}.`;
+		message = message || `Run On Save ${this.isEnabled ? "enabled" : "disabled"}.`;
 		this.outputChannel.appendLine(message);
 	}
 
@@ -82,20 +75,15 @@ export class RunOnSaveExtension {
 	}
 
 	private findActiveCommands(document: vscode.TextDocument, onlyShortcut: boolean) {
-
-		var match = (pattern: string) => pattern && pattern.length > 0 && new RegExp(pattern).test(document.fileName);
-
-		var commandConfigs = this.commands
+		let match = (pattern: string) => pattern && pattern.length > 0 && new RegExp(pattern).test(document.fileName);
+		let commandConfigs = this.commands
 			.filter(cfg => {
-				var matchPattern = cfg.match || '';
-				var negatePattern = cfg.notMatch || '';
-
+				let matchPattern = cfg.match || "";
+				let negatePattern = cfg.notMatch || "";
 				// if no match pattern was provided, or if match pattern succeeds
-				var isMatch = matchPattern.length === 0 || match(matchPattern);
-
+				let isMatch = matchPattern.length === 0 || match(matchPattern);
 				// negation has to be explicitly provided
-				var isNegate = negatePattern.length > 0 && match(negatePattern);
-
+				let isNegate = negatePattern.length > 0 && match(negatePattern);
 				// negation wins over match
 				return !isNegate && isMatch;
 			});
@@ -104,18 +92,15 @@ export class RunOnSaveExtension {
 			return;
 		}
 
-		this.showStatusMessage('Running on save commands...');
+		this.showStatusMessage("Running on save commands...");
 
 		// build our commands by replacing parameters with values
-		var commands: Array<ICommand> = [];
+		let commands: ICommand[] = [];
 		for (let cfg of commandConfigs) {
-			var cmdStr = cfg.cmd;
-
-			var extName = path.extname(document.fileName);
-
-			var root = vscode.workspace.rootPath;
-			var relativeFile = "." + document.fileName.replace(root, "");
-
+			let cmdStr = cfg.cmd;
+			let extName = path.extname(document.fileName);
+			let root = vscode.workspace.rootPath;
+			let relativeFile = "." + document.fileName.replace(root, "");
 			cmdStr = cmdStr.replace(/\${relativeFile}/g, relativeFile);
 			cmdStr = cmdStr.replace(/\${file}/g, `${document.fileName}`);
 			cmdStr = cmdStr.replace(/\${workspaceRoot}/g, `${vscode.workspace.rootPath}`);
@@ -124,12 +109,10 @@ export class RunOnSaveExtension {
 			cmdStr = cmdStr.replace(/\${fileExtname}/g, `${extName}`);
 			cmdStr = cmdStr.replace(/\${fileBasenameNoExt}/g, `${path.basename(document.fileName, extName)}`);
 			cmdStr = cmdStr.replace(/\${cwd}/g, `${process.cwd()}`);
-
 			// replace environment variables ${env.Name}
 			cmdStr = cmdStr.replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
 				return process.env[envName];
 			});
-
 			commands.push({
 				cmd: cmdStr,
 				isAsync: !!cfg.isAsync,
@@ -138,10 +121,9 @@ export class RunOnSaveExtension {
 		}
 
 		if (onlyShortcut) {
-			return commands.filter(x => x.useShortcut == true);
-		}
-		else {
-			return commands.filter(x => x.useShortcut != true)
+			return commands.filter(x => x.useShortcut === true);
+		} else {
+			return commands.filter(x => x.useShortcut !== true)
 		}
 	}
 
