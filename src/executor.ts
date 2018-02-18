@@ -8,6 +8,10 @@ export class Executor {
         }
         this.terminals[terminal].show()
         this.terminals[terminal].sendText(command)
+
+        setTimeout(() => {
+            vscode.commands.executeCommand("workbench.action.focusActiveEditorGroup")
+        }, 100)
     }
 
     public static onDidCloseTerminal(closedTerminal: vscode.Terminal): void {
