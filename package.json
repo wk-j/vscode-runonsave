@@ -73,6 +73,10 @@
                     "type": "boolean",
                     "description": "Only execute when press shortcut keys",
                     "default": false
+                  },
+                  "silent": {
+                    "type": "boolean",
+                    "description": "Suppress terminal when command is executing"
                   }
                 }
               }
