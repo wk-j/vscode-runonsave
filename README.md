@@ -2,7 +2,7 @@
 
 Fork from [vscode-runonsave](https://github.com/emeraldwalk/vscode-runonsave)
 
-Simplify original extension by pass command into Terminal directly without spawn process, so we don't lose output colors. 
+Simplify original extension by pass command into Terminal directly without spawn process, so we don't lose output colors.
 
 ![](https://github.com/wk-j/vscode-save-and-run/raw/master/images/save-and-run.png)
 
@@ -28,12 +28,14 @@ Add "saveAndRun" configuration to user or workspace settings.
     {
       "match": ".*",
       "cmd": "echo 'I run for all files.'",
-      "useShortcut": false
+      "useShortcut": false,
+      "silent": false
     },
     {
       "match": "\\.txt$",
       "cmd": "echo 'I am a .txt file ${file}.'",
-      "useShortcut": false
+      "useShortcut": false,
+      "silent": false
     }
   ]
 }
