@@ -3,12 +3,13 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { Executor } from "./executor";
 
-interface ICommand {
+export interface ICommand {
 	match?: string;
 	notMatch?: string;
 	cmd: string;
 	isAsync: boolean;
 	useShortcut?: boolean;
+	silent?: boolean;
 }
 
 interface IConfig {
@@ -36,7 +37,7 @@ export class RunOnSaveExtension {
 
 	private runAllInTerminal(commands: ICommand[]): void {
 		commands.forEach(command => {
-			this.runInTerminal(command.cmd);
+			this.runInTerminal(command);
 		});
 	}
 
@@ -115,6 +116,7 @@ export class RunOnSaveExtension {
 			});
 			commands.push({
 				cmd: cmdStr,
+				silent: cfg.silent,
 				isAsync: !!cfg.isAsync,
 				useShortcut: cfg.useShortcut
 			});
