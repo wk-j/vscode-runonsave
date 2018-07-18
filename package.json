@@ -3,7 +3,7 @@
   "displayName": "Save and Run",
   "description": "Run commands when a file is saved in Terminal",
   "icon": "images/icon.png",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "publisher": "wk-j",
   "repository": {
     "type": "git",
@@ -81,7 +81,8 @@
                 }
               }
             }
-          }
+          },
+          "scope": "resource"
         }
       }
     }

@@ -52,14 +52,15 @@ The following commands are exposed in the command palette
 
 Commands support placeholders similar to tasks.json.
 
-- `${workspaceRoot}`: workspace root folder
-- `${file}`: path of saved file
-- `${relativeFile}`: relative path of saved file
-- `${fileBasename}`: saved file's basename
-- `${fileDirname}`: directory name of saved file
-- `${fileExtname}`: extension (including .) of saved file
-- `${fileBasenameNoExt}`: saved file's basename without extension
-- `${cwd}`: current working directory
+- `${workspaceRoot}` - workspace root folder
+- `${workspaceFolder}` - the path of the folder opened in VS Code
+- `${file}` - path of saved file
+- `${relativeFile}` - relative path of saved file
+- `${fileBasename}` -  saved file's basename
+- `${fileDirname}` - directory name of saved file
+- `${fileExtname}` - extension (including .) of saved file
+- `${fileBasenameNoExt}` - saved file's basename without extension
+- `${cwd}` - current working directory
 
 ### Environment Variable Tokens
 

@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { ICommand } from "./runner";
 
 export class Executor {
-    public static runInTerminal(command: ICommand, terminal: string = "Save & Run"): void {
+    public static runInTerminal(command: ICommand, terminal: string): void {
         if (this.terminals[terminal] === undefined) {
             const term = vscode.window.createTerminal(terminal)
             this.terminals[terminal] = term
