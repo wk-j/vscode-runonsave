@@ -40,7 +40,7 @@ export class RunOnSaveExtension {
     }
 
     public get isEnabled(): boolean {
-        return !!this.context.globalState.get("isEnabled", true);
+        return this.context.globalState.get("isEnabled", true);
     }
     public set isEnabled(value: boolean) {
         this.context.globalState.update("isEnabled", value);
@@ -136,6 +136,7 @@ export class RunOnSaveExtension {
 
         if (!this.isEnabled || config.commands.length === 0) {
             this.showOutputMessage();
+            return;
         }
 
         let commands = this.findActiveCommands(config, document, onlyShortcut);
