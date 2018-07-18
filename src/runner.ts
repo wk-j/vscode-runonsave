@@ -135,6 +135,7 @@ export class RunOnSaveExtension {
         }
 
         if (!this.isEnabled || config.commands.length === 0) {
+            this.showStatusMessage("");
             this.showOutputMessage();
             return;
         }
@@ -143,5 +144,6 @@ export class RunOnSaveExtension {
         let terminalName = this.getWorkspaceFolder().name
 
         this.runAllInTerminal(commands, `Run ${terminalName}`);
+        this.showStatusMessage("");
     }
 }
