@@ -1,160 +1,151 @@
+import * as path from "path";
 import * as vscode from "vscode";
-import { exec } from 'child_process';
-import * as path from 'path';
-var ncp = require("copy-paste");
-var endOfLine = require('os').EOL;
+import { workspace } from "vscode"
+import { Executor } from "./executor";
 
-interface ICommand {
-	match?: string;
-	notMatch?: string;
-	cmd: string;
-	isAsync: boolean;
-	useShortcut?: boolean;
+export interface ICommand {
+    match?: string;
+    notMatch?: string;
+    cmd: string;
+    isAsync: boolean;
+    useShortcut?: boolean;
+    silent?: boolean;
 }
 
 interface IConfig {
-	shell: string;
-	autoClearConsole: boolean;
-	commands: Array<ICommand>;
+    shell: string;
+    autoClearConsole: boolean;
+    commands: ICommand[];
 }
 
 export class RunOnSaveExtension {
-	private outputChannel: vscode.OutputChannel;
-	private context: vscode.ExtensionContext;
-	private config: IConfig;
+    private outputChannel: vscode.OutputChannel;
+    private context: vscode.ExtensionContext;
 
-	constructor(context: vscode.ExtensionContext) {
-		this.context = context;
-		this.outputChannel = vscode.window.createOutputChannel('Run On Save');
-		this.loadConfig();
-	}
+    constructor(context: vscode.ExtensionContext) {
+        this.context = context;
+        this.outputChannel = vscode.window.createOutputChannel("Save and Run");
+    }
 
-	private runInTerminal(command) {
-		var editor = vscode.window.activeTextEditor
-		var column = editor.viewColumn;
-		ncp.copy(command + endOfLine, () => {
-			vscode.commands.executeCommand("workbench.action.terminal.focus").then(() => {
-				vscode.commands.executeCommand("workbench.action.terminal.paste").then(() => {
-					vscode.window.showTextDocument(editor.document, column)
-				});
-			});
-		});
-	}
+    private runInTerminal(command, name) {
+        let editor = vscode.window.activeTextEditor
+        let column = editor.viewColumn;
+        Executor.runInTerminal(command, name)
+    }
 
-	private runAllInTerminal(commands: ICommand[]): void {
-		commands.forEach(command => {
-			this.runInTerminal(command.cmd);
-		});
-	}
+    private runAllInTerminal(commands: ICommand[], terminalName): void {
+        commands.forEach(command => {
+            this.runInTerminal(command, terminalName);
+        });
+    }
 
-	public get isEnabled(): boolean {
-		return !!this.context.globalState.get('isEnabled', true);
-	}
-	public set isEnabled(value: boolean) {
-		this.context.globalState.update('isEnabled', value);
-		this.showOutputMessage();
-	}
+    public get isEnabled(): boolean {
+        return this.context.globalState.get("isEnabled", true);
+    }
+    public set isEnabled(value: boolean) {
+        this.context.globalState.update("isEnabled", value);
+        this.showOutputMessage();
+    }
 
-	public get shell(): string {
-		return this.config.shell;
-	}
+    private loadConfig() {
+        const uri = vscode.window.activeTextEditor.document.uri;
+        let config = vscode.workspace.getConfiguration("", uri);
+        let key = "saveAndRun"
+        let saveAndRun = config.get<IConfig>(key);
+        return saveAndRun;
+    }
 
-	public get autoClearConsole(): boolean {
-		return !!this.config.autoClearConsole;
-	}
+    public showOutputMessage(message?: string): void {
+        message = message || `Save and Run ${this.isEnabled ? "enabled" : "disabled"}.`;
+        this.outputChannel.appendLine(message);
+    }
 
-	public get commands(): Array<ICommand> {
-		return this.config.commands || [];
-	}
+    public showStatusMessage(message: string): vscode.Disposable {
+        this.showOutputMessage(message);
+        return vscode.window.setStatusBarMessage(message);
+    }
 
-	public loadConfig(): void {
-		this.config = <IConfig><any>vscode.workspace.getConfiguration('saveAndRun');
-	}
+    private getWorkspaceFolder() {
+        const editor = vscode.window.activeTextEditor;
+        const resource = editor.document.uri;
+        const rootFolder = workspace.getWorkspaceFolder(resource);
+        return rootFolder
+    }
 
-	public showOutputMessage(message?: string): void {
-		message = message || `Run On Save ${this.isEnabled ? 'enabled' : 'disabled'}.`;
-		this.outputChannel.appendLine(message);
-	}
+    private findActiveCommands(config: IConfig, document: vscode.TextDocument, onlyShortcut: boolean) {
+        let match = (pattern: string) => pattern && pattern.length > 0 && new RegExp(pattern).test(document.fileName);
+        let commandConfigs = config.commands
+            .filter(cfg => {
+                let matchPattern = cfg.match || "";
+                let negatePattern = cfg.notMatch || "";
+                // if no match pattern was provided, or if match pattern succeeds
+                let isMatch = matchPattern.length === 0 || match(matchPattern);
+                // negation has to be explicitly provided
+                let isNegate = negatePattern.length > 0 && match(negatePattern);
+                // negation wins over match
+                return !isNegate && isMatch;
+            });
 
-	public showStatusMessage(message: string): vscode.Disposable {
-		this.showOutputMessage(message);
-		return vscode.window.setStatusBarMessage(message);
-	}
+        if (commandConfigs.length === 0) {
+            return [];
+        }
 
-	private findActiveCommands(document: vscode.TextDocument, onlyShortcut: boolean) {
+        this.showStatusMessage("Running on save commands...");
 
-		var match = (pattern: string) => pattern && pattern.length > 0 && new RegExp(pattern).test(document.fileName);
+        // build our commands by replacing parameters with values
+        let commands: ICommand[] = [];
+        for (let cfg of commandConfigs) {
+            let cmdStr = cfg.cmd;
+            let extName = path.extname(document.fileName);
 
-		var commandConfigs = this.commands
-			.filter(cfg => {
-				var matchPattern = cfg.match || '';
-				var negatePattern = cfg.notMatch || '';
+            const rootFolder = this.getWorkspaceFolder();
+            const root = rootFolder.uri.path;
 
-				// if no match pattern was provided, or if match pattern succeeds
-				var isMatch = matchPattern.length === 0 || match(matchPattern);
+            let relativeFile = "." + document.fileName.replace(root, "");
+            cmdStr = cmdStr.replace(/\${relativeFile}/g, relativeFile);
+            cmdStr = cmdStr.replace(/\${workspaceFolder}/g, root);
+            cmdStr = cmdStr.replace(/\${file}/g, `${document.fileName}`);
+            cmdStr = cmdStr.replace(/\${workspaceRoot}/g, `${vscode.workspace.rootPath}`);
+            cmdStr = cmdStr.replace(/\${fileBasename}/g, `${path.basename(document.fileName)}`);
+            cmdStr = cmdStr.replace(/\${fileDirname}/g, `${path.dirname(document.fileName)}`);
+            cmdStr = cmdStr.replace(/\${fileExtname}/g, `${extName}`);
+            cmdStr = cmdStr.replace(/\${fileBasenameNoExt}/g, `${path.basename(document.fileName, extName)}`);
+            cmdStr = cmdStr.replace(/\${cwd}/g, `${process.cwd()}`);
 
-				// negation has to be explicitly provided
-				var isNegate = negatePattern.length > 0 && match(negatePattern);
+            // replace environment variables ${env.Name}
+            cmdStr = cmdStr.replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
+                return process.env[envName];
+            });
+            commands.push({
+                cmd: cmdStr,
+                silent: cfg.silent,
+                isAsync: !!cfg.isAsync,
+                useShortcut: cfg.useShortcut
+            });
+        }
 
-				// negation wins over match
-				return !isNegate && isMatch;
-			});
+        if (onlyShortcut) {
+            return commands.filter(x => x.useShortcut === true);
+        } else {
+            return commands.filter(x => x.useShortcut !== true)
+        }
+    }
 
-		if (commandConfigs.length === 0) {
-			return;
-		}
+    public runCommands(document: vscode.TextDocument, onlyShortcut: boolean): void {
+        let config = this.loadConfig();
+        if (config.autoClearConsole) {
+            this.outputChannel.clear();
+        }
 
-		this.showStatusMessage('Running on save commands...');
+        if (!this.isEnabled || config.commands.length === 0) {
+            this.showStatusMessage("");
+            this.showOutputMessage();
+            return;
+        }
 
-		// build our commands by replacing parameters with values
-		var commands: Array<ICommand> = [];
-		for (let cfg of commandConfigs) {
-			var cmdStr = cfg.cmd;
-
-			var extName = path.extname(document.fileName);
-
-			var root = vscode.workspace.rootPath;
-			var relativeFile = "." + document.fileName.replace(root, "");
-
-			cmdStr = cmdStr.replace(/\${relativeFile}/g, relativeFile);
-			cmdStr = cmdStr.replace(/\${file}/g, `${document.fileName}`);
-			cmdStr = cmdStr.replace(/\${workspaceRoot}/g, `${vscode.workspace.rootPath}`);
-			cmdStr = cmdStr.replace(/\${fileBasename}/g, `${path.basename(document.fileName)}`);
-			cmdStr = cmdStr.replace(/\${fileDirname}/g, `${path.dirname(document.fileName)}`);
-			cmdStr = cmdStr.replace(/\${fileExtname}/g, `${extName}`);
-			cmdStr = cmdStr.replace(/\${fileBasenameNoExt}/g, `${path.basename(document.fileName, extName)}`);
-			cmdStr = cmdStr.replace(/\${cwd}/g, `${process.cwd()}`);
-
-			// replace environment variables ${env.Name}
-			cmdStr = cmdStr.replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
-				return process.env[envName];
-			});
-
-			commands.push({
-				cmd: cmdStr,
-				isAsync: !!cfg.isAsync,
-				useShortcut: cfg.useShortcut
-			});
-		}
-
-		if (onlyShortcut) {
-			return commands.filter(x => x.useShortcut == true);
-		}
-		else {
-			return commands.filter(x => x.useShortcut != true)
-		}
-	}
-
-	public runCommands(document: vscode.TextDocument, onlyShortcut: boolean): void {
-		if (this.autoClearConsole) {
-			this.outputChannel.clear();
-		}
-
-		if (!this.isEnabled || this.commands.length === 0) {
-			this.showOutputMessage();
-		}
-
-		let commands = this.findActiveCommands(document, onlyShortcut);
-		this.runAllInTerminal(commands);
-	}
+        let commands = this.findActiveCommands(config, document, onlyShortcut);
+        let terminalName = this.getWorkspaceFolder().name
+        this.runAllInTerminal(commands, `Run ${terminalName}`);
+        this.showStatusMessage("");
+    }
 }

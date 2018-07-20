@@ -1,102 +1,105 @@
 {
-  "name": "save-and-run",
-  "displayName": "Save and Run",
-  "description": "Run commands when a file is saved in Terminal",
-  "icon": "images/icon.png",
-  "version": "0.0.15",
-  "publisher": "wk-j",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wk-j/vscode-save-and-run"
-  },
-  "engines": {
-    "vscode": "^1.5.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "*"
-  ],
-  "main": "./out/src/extension",
-  "contributes": {
-    "keybindings": [
-      {
-          "command": "extension.saveAndRun.execute",
-          "key": "ctrl+shift+r",
-          "mac": "cmd+shift+r"
-      }
+    "name": "save-and-run",
+    "displayName": "Save and Run",
+    "description": "Run commands when a file is saved in Terminal",
+    "icon": "images/icon.png",
+    "version": "0.0.21",
+    "publisher": "wk-j",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wk-j/vscode-save-and-run"
+    },
+    "engines": {
+        "vscode": "^1.25.0"
+    },
+    "categories": [
+        "Other"
     ],
-    "commands": [
-      {
-        "command": "extension.saveAndRun.enable",
-        "title": "Save and Run : Enable"
-      },
-      {
-        "command": "extension.saveAndRun.disable",
-        "title": "Save and Run : Disable"
-      }
+    "activationEvents": [
+        "*"
     ],
-    "configuration": {
-      "title": "Save & Run command configuration.",
-      "type": "object",
-      "properties": {
-        "saveAndRun": {
-          "type": "object",
-          "properties": {
-            "commands": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "match": {
-                    "type": "string",
-                    "description": "Regex for matching files to run commands on.",
-                    "default": ".*"
-                  },
-                  "notMatch": {
-                    "type": "string",
-                    "description": "Regex for matching files *not* to run commands on.",
-                    "default": ".*"
-                  },
-                  "cmd": {
-                    "type": "string",
-                    "description": "Command to execute on save.",
-                    "default": "echo ${file}"
-                  },
-                  "isAsync": {
-                    "type": "boolean",
-                    "description": "Run command asynchronously.",
-                    "default": false
-                  },
-                  "useShortcut": {
-                    "type": "boolean",
-                    "description": "Only execute when press shortcut keys",
-                    "default": false
-                  }
-                }
-              }
+    "main": "./out/src/extension",
+    "contributes": {
+        "keybindings": [
+            {
+                "command": "extension.saveAndRun.execute",
+                "key": "ctrl+shift+r",
+                "mac": "cmd+shift+r"
             }
-          }
+        ],
+        "commands": [
+            {
+                "command": "extension.saveAndRun.enable",
+                "title": "Save and Run : Enable"
+            },
+            {
+                "command": "extension.saveAndRun.disable",
+                "title": "Save and Run : Disable"
+            }
+        ],
+        "configuration": {
+            "title": "Save & Run command configuration.",
+            "type": "object",
+            "properties": {
+                "saveAndRun": {
+                    "type": "object",
+                    "properties": {
+                        "commands": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "match": {
+                                        "type": "string",
+                                        "description": "Regex for matching files to run commands on.",
+                                        "default": ".*"
+                                    },
+                                    "notMatch": {
+                                        "type": "string",
+                                        "description": "Regex for matching files *not* to run commands on.",
+                                        "default": ".*"
+                                    },
+                                    "cmd": {
+                                        "type": "string",
+                                        "description": "Command to execute on save.",
+                                        "default": "echo ${file}"
+                                    },
+                                    "isAsync": {
+                                        "type": "boolean",
+                                        "description": "Run command asynchronously.",
+                                        "default": false
+                                    },
+                                    "useShortcut": {
+                                        "type": "boolean",
+                                        "description": "Only execute when press shortcut keys",
+                                        "default": false
+                                    },
+                                    "silent": {
+                                        "type": "boolean",
+                                        "description": "Suppress terminal when command is executing"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "scope": "resource"
+                }
+            }
         }
-      }
-    }
-  },
-  "scripts": {
-    "publish": "vsce publish",
-    "vscode:prepublish": "tsc -p ./",
-    "compile": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test"
-  },
-  "devDependencies": {
-    "@types/mocha": "^2.2.32",
-    "@types/node": "^6.0.40",
-    "mocha": "^2.3.3",
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0"
-  },
-  "dependencies": {
-    "copy-paste": "^1.3.0"
-  }
+    },
+    "scripts": {
+        "publish": "vsce publish",
+        "vscode:prepublish": "tsc -p ./",
+        "compile": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.32",
+        "@types/node": "^6.0.101",
+        "mocha": "^5.2.0",
+        "typescript": "^2.7.2",
+        "vscode": "^1.1.10"
+    },
+    "dependencies": {}
 }
