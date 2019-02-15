@@ -18,9 +18,9 @@ Simplify original extension by pass command into Terminal directly without spawn
 Add "saveAndRun" configuration to user or workspace settings.
 
 - "commands" - Array of commands that will be run whenever a file is saved.
-  - "match" - A regex for matching which files to run commands on
-  - "cmd" - Command to run. Can include parameters that will be replaced at runtime (see Placeholder Tokens section below).
-  - "useShortcut" - Execute file with shortcut key `Command + Shift + R`
+- "match" - A regex for matching which files to run commands on
+- "cmd" - Command to run. Can include parameters that will be replaced at runtime (see Placeholder Tokens section below).
+- "useShortcut" - Execute file with shortcut key `Command + Shift + R`
 
 ## Sample Config
 

@@ -48,8 +48,11 @@ export class RunOnSaveExtension {
     }
 
     private loadConfig() {
-        let config = vscode.workspace.getConfiguration("saveAndRun") as any as IConfig;
-        return config;
+        const uri = vscode.window.activeTextEditor.document.uri;
+        let config = vscode.workspace.getConfiguration("", uri);
+        let key = "saveAndRun"
+        let saveAndRun = config.get<IConfig>(key);
+        return saveAndRun;
     }
 
     public showOutputMessage(message?: string): void {
@@ -84,7 +87,7 @@ export class RunOnSaveExtension {
             });
 
         if (commandConfigs.length === 0) {
-            return;
+            return [];
         }
 
         this.showStatusMessage("Running on save commands...");
@@ -142,7 +145,6 @@ export class RunOnSaveExtension {
 
         let commands = this.findActiveCommands(config, document, onlyShortcut);
         let terminalName = this.getWorkspaceFolder().name
-
         this.runAllInTerminal(commands, `Run ${terminalName}`);
         this.showStatusMessage("");
     }
