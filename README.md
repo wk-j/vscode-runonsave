@@ -1,5 +1,7 @@
 ## Run saved file in Terminal
 
+[![Version](https://vsmarketplacebadge.apphb.com/version/wk-j.save-and-run.svg)](https://marketplace.visualstudio.com/items?itemName=wk-j.save-and-run) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/wk-j.save-and-run.svg)](https://marketplace.visualstudio.com/items?itemName=wk-j.save-and-run)
+
 Fork from [vscode-runonsave](https://github.com/emeraldwalk/vscode-runonsave)
 
 Simplify original extension by pass command into Terminal directly without spawn process, so we don't lose output colors.
