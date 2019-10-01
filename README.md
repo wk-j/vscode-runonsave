@@ -21,6 +21,7 @@ Add "saveAndRun" configuration to user or workspace settings.
 - "match" - A regex for matching which files to run commands on
 - "cmd" - Command to run. Can include parameters that will be replaced at runtime (see Placeholder Tokens section below).
 - "useShortcut" - Execute file with shortcut key `Command + Shift + R`
+- "silent" - Don't show terminal after save. Defaults to false
 
 ## Sample Config
 
