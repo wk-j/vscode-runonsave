@@ -99,7 +99,7 @@
         "@types/node": "^6.0.101",
         "mocha": "^5.2.0",
         "typescript": "^2.7.2",
-        "vscode": "^1.1.10"
+        "vscode": "^1.1.36"
     },
     "dependencies": {}
 }
