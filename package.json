@@ -10,7 +10,7 @@
         "url": "https://github.com/wk-j/vscode-save-and-run"
     },
     "engines": {
-        "vscode": "^1.25.0"
+        "vscode": "^1.38.0"
     },
     "categories": [
         "Other"
