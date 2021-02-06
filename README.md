@@ -1,4 +1,8 @@
-## Run saved file in Terminal
+<p align="center">
+    <img src="https://github.com/wk-j/vscode-save-and-run/raw/master/resource/logo.png" />
+</p>
+
+# Run saved file in Terminal
 
 [![Version](https://vsmarketplacebadge.apphb.com/version/wk-j.save-and-run.svg)](https://marketplace.visualstudio.com/items?itemName=wk-j.save-and-run) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/wk-j.save-and-run.svg)](https://marketplace.visualstudio.com/items?itemName=wk-j.save-and-run)
 
@@ -8,12 +12,12 @@ Simplify original extension by pass command into Terminal directly without spawn
 
 ![](https://github.com/wk-j/vscode-save-and-run/raw/master/images/save-and-run.png)
 
-## Features
+# Features
 
 - Configure multiple commands that run when a file is saved
 - Regex pattern matching for files that trigger commands running
 
-## Configuration
+# Configuration
 
 Add "saveAndRun" configuration to user or workspace settings.
 
@@ -23,7 +27,7 @@ Add "saveAndRun" configuration to user or workspace settings.
 - "useShortcut" - Execute file with shortcut key `Command + Shift + R`
 - "silent" - Don't show terminal after save. Defaults to false
 
-## Sample Config
+# Sample Config
 
 ```json
 "saveAndRun": {
@@ -44,14 +48,14 @@ Add "saveAndRun" configuration to user or workspace settings.
 }
 ```
 
-## Commands
+# Commands
 
 The following commands are exposed in the command palette
 
 - `Save and Run : Enable`
 - `Save and Run : Disable`
 
-## Placeholder Tokens
+# Placeholder Tokens
 
 Commands support placeholders similar to tasks.json.
 
@@ -65,10 +69,10 @@ Commands support placeholders similar to tasks.json.
 - `${fileBasenameNoExt}` - saved file's basename without extension
 - `${cwd}` - current working directory
 
-### Environment Variable Tokens
+# Environment Variable Tokens
 
 - `${env.Name}`
 
-## License
+# License
 
 [Apache](https://github.com/wk-j/vscode-save-and-run/blob/master/LICENSE)

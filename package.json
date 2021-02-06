@@ -2,8 +2,8 @@
     "name": "save-and-run",
     "displayName": "Save and Run",
     "description": "Run commands when a file is saved in Terminal",
-    "icon": "images/icon.png",
-    "version": "0.0.21",
+    "icon": "resource/icon.png",
+    "version": "0.0.22",
     "publisher": "wk-j",
     "repository": {
         "type": "git",
